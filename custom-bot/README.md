@@ -1,57 +1,56 @@
-# 🤖 Bot Simple de WhatsApp
+# 🤖 Bot WhatsApp con IA (OpenAI vía MCP Chat)
 
-Bot de WhatsApp con Baileys - Versión limpia y funcional.
+Bot de WhatsApp que se conecta con MCP Chat para responder con OpenAI.
 
 ---
 
-## 📁 Archivos
+## 🎯 Funcionamiento
 
-- `index.ts` - Archivo principal del bot
-- `BaileysClass.ts` - Clase de conexión con WhatsApp
-- `utils.ts` - Funciones auxiliares
+- `"Hola"` → Respuesta hardcodeada del bot
+- `"Menu"`→ Respuesta hardcodeada del bot
+- **Todo lo demás** → Se envía a MCP Chat (OpenAI responde)
 
 ---
 
 ## ⚙️ Configuración
 
-### Número permitido
+### 1. Número permitido
 Edita `index.ts` línea 6:
-
 ```typescript
-const NUMERO_PERMITIDO = "59895541080"; // Tu número
+const NUMERO_PERMITIDO = "Pongan uno de sus numeros para que solo pueda hablar 1 y no conteste todos los msj, el formato es el siguiente: numero uruguayo: 598sunumero,numero argentino:593sunumero";
 ```
+
+### 2. MCP Chat
+Debe estar corriendo en: `http://localhost:3001`
 
 ---
 
-## 🚀 Uso
+## Uso
 
-### Iniciar bot:
+### 1. Inicia tu MCP Chat (puerto 3000):
+```bash
+
+```
+
+### 2. Inicia el bot (puerto 3001):
 ```bash
 npm run bot
 ```
 
-### Conectar:
-1. Escanea el QR que aparece en la terminal
-2. O abre la imagen: `mi-bot.qr.png`
+### 3. Escanea el QR con WhatsApp
 
-### Comandos disponibles:
-- `hola` - Saludo
-- `menu` - Ver comandos
-- `ping` - Verificar conexión
+### 4. Envía mensajes:
+- `"Hola"` → Respuesta fija del bot
+- `"Agenda reunión mañana 15:00"` → OpenAI procesa y responde
+
 
 ---
 
-## 📝 Personalizar
+##Flujo
 
-Edita `index.ts` líneas 70-110 para agregar tus propios comandos.
-
----
-
-## 🔒 Sesiones
-
-Las credenciales se guardan en: `./mi-bot_sessions/`
-
-Para reconectar desde cero:
-```bash
-rmdir /s mi-bot_sessions
 ```
+Usuario → Bot → MCP Chat → OpenAI → MCP Chat → Bot → Usuario
+```
+
+
+

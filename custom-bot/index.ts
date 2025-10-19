@@ -56,81 +56,78 @@ bot.on("message", async (msg) => {
 
   console.log(`   ✅ Mensaje del número permitido - Procesando...`);
 
-  // Respuestas automáticas
   try {
     const text = msg.body?.toLowerCase() || "";
 
-    // Comando: hola
+    // 👋 ÚNICO COMANDO HARDCODEADO: "hola"
     if (text === "hola") {
       await bot.sendText(
         msg.from,
-        "¡Hola! 👋\n\nSoy un bot de WhatsApp. Escribe *menu* para ver los comandos."
+        "¡Hola! 👋\n\nSoy Javier tu asistente personal. Pregúntame lo que quieras y te ayudaré."
       );
+      return; // No enviar a MCP Chat
     }
 
-    // Comando: menu
-    else if (text === "menu") {
-      await bot.sendText(
-        msg.from,
-        "🤖 *MENÚ*\n\n" +
-        "• *hola* - Saludo\n" +
-        "• *menu* - Ver este menú\n" +
-        "• *ping* - Verificar conexión"
-      );
+    // 🤖 TODO LO DEMÁS → ENVIAR A MCP CHAT (OpenAI responde)
+    if (msg.body && !msg.body.startsWith("_event_")) {
+      console.log("   🤖 Enviando al MCP Chat (OpenAI)...");
+      
+      try {
+        const axios = (await import("axios")).default;
+        
+        // Enviar mensaje a tu MCP Chat
+        const response = await axios.post("http://localhost:3000/api/chat", {
+          message: msg.body, // Mensaje original (no lowercase)
+        }, {
+          timeout: 30000, // 30 segundos
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        // Extraer respuesta de OpenAI
+        // Ajusta según la estructura de respuesta de tu MCP Chat
+        const respuestaIA = response.data.response || 
+                           response.data.message || 
+                           response.data.result ||
+                           response.data;
+        
+        console.log("   ✅ Respuesta recibida de OpenAI");
+        
+        // Enviar respuesta al usuario
+        if (respuestaIA && typeof respuestaIA === 'string') {
+          await bot.sendText(msg.from, respuestaIA);
+        } else {
+          console.log("   ⚠️ Formato de respuesta inesperado:", respuestaIA);
+          await bot.sendText(msg.from, "🤔 Procesé tu mensaje pero no pude formular una respuesta.");
+        }
+        
+      } catch (error: any) {
+        console.error("   ❌ Error con MCP Chat:", error.message);
+        
+        if (error.code === 'ECONNREFUSED') {
+          await bot.sendText(
+            msg.from,
+            "⚠️ El asistente de IA no está disponible. Asegúrate de que el MCP Chat esté corriendo en puerto 3000."
+          );
+        } else if (error.response) {
+          console.error("   Status:", error.response.status);
+          console.error("   Data:", error.response.data);
+          await bot.sendText(
+            msg.from,
+            "❌ Hubo un problema al procesar tu mensaje. Intenta de nuevo."
+          );
+        } else {
+          await bot.sendText(
+            msg.from,
+            "❌ Error de conexión. Verifica que el MCP Chat esté corriendo."
+          );
+        }
+      }
     }
-
-    // Comando: ping
-    else if (text === "ping") {
-      await bot.sendText(msg.from, "🏓 Pong! El bot está funcionando.");
-    }
-
-    // Responder a imágenes
-    else if (msg.type === "image") {
-      await bot.sendText(msg.from, "📸 Imagen recibida.");
-    }
-
-    // Responder a audios
-    else if (msg.type === "voice") {
-      await bot.sendText(msg.from, "🎤 Nota de voz recibida.");
-    }
-
-    // Responder a ubicaciones
-    else if (msg.type === "location") {
-      await bot.sendText(msg.from, "📍 Ubicación recibida.");
-    }
-
-    // Responder a archivos
-    else if (msg.type === "file") {
-      await bot.sendText(msg.from, "📄 Archivo recibido.");
-    }
-
-   // Mensaje no reconocido → se envía al MCP-Chat
-else if (text && !text.startsWith("_event_")) {
-  console.log("   🤖 Enviando mensaje al MCP-Chat...");
-
-  try {
-    const axios = await import("axios");
-    const response = await axios.default.post("http://localhost:3000/api/mcp", {
-      message: text,
-    });
-
-    const result = response.data.result || "✅ Acción ejecutada correctamente.";
-
-    console.log("   🧠 Respuesta del MCP-Chat:", result);
-
-    await bot.sendText(msg.from, result);
-  } catch (error: any) {
-    console.error("   ❌ Error al contactar al MCP:", error.message);
-    await bot.sendText(
-      msg.from,
-      "⚙️ No pude contactar al asistente por ahora. Intenta más tarde."
-    );
-  }
-}
-
 
   } catch (error) {
-    console.error("   ❌ Error procesando mensaje:", error);
+    console.error("   ❌ Error general:", error);
   }
 });
 
