@@ -146,69 +146,23 @@ bot.on("message", async (msg) => {
     if (textLower === "hola") {
       await bot.sendText(
         msg.from,
-        "¡Hola! 👋\n\nSoy un bot de WhatsApp. Escribe *menu* para ver los comandos."
+        "¡Hola! 👋\n\nSoy un Uni, tu asistense personal. Escribe *menu* para ver las funcionalidades disponibles."
       );
       return;
     }
 
     // Comando: menu
-    if (textLower === "menu") {
+    if (textLower === "menu" || textLower === "Menu") {
       await bot.sendText(
         msg.from,
         "🤖 *MENÚ*\n\n" +
-          "• *hola* - Saludo\n" +
-          "• *menu* - Ver este menú\n" +
-          "• *ping* - Verificar conexión\n" +
-          "• *herramientas* - Ver estado de herramientas"
+          "• Enviar emails a través de gmail\n" +
+          "• Agendar citas en tu google calendar\n" +
+          "• Más funcionalidad: comming soon...\n"
       );
       return;
     }
 
-    // Comando: ping
-    if (textLower === "ping") {
-      await bot.sendText(msg.from, "🏓 Pong! El bot está funcionando.");
-      return;
-    }
-
-    // Comando: herramientas
-    if (textLower === "herramientas") {
-      await bot.sendText(
-        msg.from,
-        "🔧 *Estado de Herramientas*\n\n" +
-          "✅ Sistema de herramientas activo\n" +
-          "🔗 MCP Endpoint: " + MCP_URL + "\n" +
-          "📊 Las herramientas ejecutadas se reportan automáticamente\n\n" +
-          "💡 *Tip:* Cuando uses una herramienta, recibirás un mensaje detallado con:\n" +
-          "• ✅ Confirmación de ejecución\n" +
-          "• 🔧 Nombre de la herramienta utilizada\n" +
-          "• 📋 Resultado obtenido"
-      );
-      return;
-    }
-
-    // Responder a imágenes
-    if (msg.type === "image") {
-      await bot.sendText(msg.from, "📸 Imagen recibida.");
-      return;
-    }
-
-    // Responder a audios
-    if (msg.type === "voice") {
-      await bot.sendText(msg.from, "🎤 Nota de voz recibida.");
-      return;
-    }
-
-    // Responder a ubicaciones
-    if (msg.type === "location") {
-      await bot.sendText(msg.from, "📍 Ubicación recibida.");
-      return;
-    }
-
-    // Responder a archivos
-    if (msg.type === "file") {
-      await bot.sendText(msg.from, "📄 Archivo recibido.");
-      return;
-    }
 
     // Mensaje no reconocido → se envía al MCP-Chat
     if (originalText && !originalText.startsWith("_event_")) {
